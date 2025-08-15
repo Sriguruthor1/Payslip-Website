@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Payroll Management System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="login-content">
+            <div class="login-illustration">
+                <div class="illustration-image">
+                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b9a4d111-3054-4305-8828-7faec75bfe7a.png" alt="Modern mobile security illustration" style="max-width: 100%; height: auto; border-radius: 12px;" />
+                </div>
+            </div>
+            <div class="login-form">
+                <h1 class="login-title">Login</h1>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="Enter your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" placeholder="Password" required>
+                    </div>
+                    <div class="form-group forgot-password">
+                        <a href="#" onclick="showAlert('Password reset functionality would be implemented here')">Forgot Password?</a>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="login-btn">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-item active" data-page="overview">
+                <i class="fas fa-chart-pie"></i>
+                <span>Overview</span>
+            </div>
+            <div class="sidebar-item" data-page="payroll">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Payroll</span>
+            </div>
+            <div class="sidebar-item" data-page="payslip">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Payslip</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Overview Page -->
+            <div class="page" id="overviewPage">
+                <div class="page-header">
+                    <h1 class="greeting">Good Morning!</h1>
+                    <div class="header-actions">
+                        <input type="text" class="search-box" placeholder="Search...">
+                        <div class="notification-icon" onclick="showAlert('No new notifications')">
+                            <i class="fas fa-bell"></i>
+                            <div class="notification-badge">1</div>
+                        </div>
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d4137eca-c7f5-4f08-a97b-8abc78116f40.png" alt="Professional headshot" class="profile-pic" onclick="showAlert('Profile settings would open here')">
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="animateCard(this)">
+                        <div class="stat-header">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <button class="stat-edit-btn" onclick="openEditModal('Total Employees', 'totalEmployees', event)">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </div>
+                        <div class="stat-title">Total Employees</div>
+                        <div class="stat-value" id="totalEmployees">156</div>
+                    </div>
+                    <div class="stat-card" onclick="animateCard(this)">
+                        <div class="stat-header">
+                            <div class="stat-icon"><i class="fas fa-calendar-times"></i></div>
+                            <button class="stat-edit-btn" onclick="openEditModal('Number Of Leave', 'totalLeave', event)">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </div>
+                        <div class="stat-title">Number Of Leave</div>
+                        <div class="stat-value" id="totalLeave">23</div>
+                    </div>
+                    <div class="stat-card" onclick="animateCard(this)">
+                        <div class="stat-header">
+                            <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
+                            <button class="stat-edit-btn" onclick="openEditModal('New Employees', 'newEmployees', event)">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </div>
+                        <div class="stat-title">New Employees</div>
+                        <div class="stat-value" id="newEmployees">8</div>
+                    </div>
+                    <div class="stat-card" onclick="animateCard(this)">
+                        <div class="stat-header">
+                            <div class="stat-icon"><i class="fas fa-umbrella-beach"></i></div>
+                            <button class="stat-edit-btn" onclick="openEditModal('Holidays This Year', 'holidays', event)">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </div>
+                        <div class="stat-title">Holidays This Year</div>
+                        <div class="stat-value" id="holidays">12</div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Calendar</h2>
+                            <button class="section-edit-btn" onclick="showAlert('Calendar edit functionality would be implemented here')">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <span style="font-weight: 600;" id="currentMonthYear">May 2025</span>
+                            <div>
+                                <button onclick="previousMonth()" style="border: none; background: none; cursor: pointer; font-size: 18px;"><i class="fas fa-chevron-left"></i></button>
+                                <button onclick="nextMonth()" style="border: none; background: none; cursor: pointer; font-size: 18px;"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <table class="calendar" id="calendarTable">
+                            <tr>
+                                <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+                            </tr>
+                            <tr>
+                                <td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td>
+                            </tr>
+                            <tr>
+                                <td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td>
+                            </tr>
+                            <tr>
+                                <td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td class="today">17</td>
+                            </tr>
+                            <tr>
+                                <td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td>
+                            </tr>
+                            <tr>
+                                <td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Upcoming Meetings</h2>
+                            <button class="section-edit-btn" onclick="openMeetingModal()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="meetings-list" id="meetingsList">
+                            <div class="meeting-item" onclick="animateMeeting(this)">
+                                <div class="meeting-content">
+                                    <div class="meeting-time">Client Meeting - 10:00 Am</div>
+                                    <div class="meeting-date">Wed May 17</div>
+                                </div>
+                                <button class="meeting-edit-btn" onclick="editMeeting(this.parentElement, event)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                            <div class="meeting-item" onclick="animateMeeting(this)">
+                                <div class="meeting-content">
+                                    <div class="meeting-time">Team Meeting - 11:00 Am</div>
+                                    <div class="meeting-date">Wed May 17</div>
+                                </div>
+                                <button class="meeting-edit-btn" onclick="editMeeting(this.parentElement, event)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                            <div class="meeting-item" onclick="animateMeeting(this)">
+                                <div class="meeting-content">
+                                    <div class="meeting-time">HR Interview - 2:00 Pm</div>
+                                    <div class="meeting-date">Mon May 17</div>
+                                </div>
+                                <button class="meeting-edit-btn" onclick="editMeeting(this.parentElement, event)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                            <div class="meeting-item" onclick="animateMeeting(this)">
+                                <div class="meeting-content">
+                                    <div class="meeting-time">Client Meeting - 4:00 Pm</div>
+                                    <div class="meeting-date">Mon May 17</div>
+                                </div>
+                                <button class="meeting-edit-btn" onclick="editMeeting(this.parentElement, event)">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payroll Form Page -->
+            <div class="page hidden" id="payrollPage">
+                <div class="page-header">
+                    <h1 class="greeting">Payroll Details</h1>
+                    <div class="header-actions">
+                        <!-- Empty for now -->
+                    </div>
+                </div>
+
+                <div class="payroll-form">
+                    <form id="payrollForm">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label class="form-label">Employee Name</label>
+                                <input type="text" class="form-input-field" placeholder="Enter employee name">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Employee Role</label>
+                                <input type="text" class="form-input-field" placeholder="Enter role">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Employee ID</label>
+                                <input type="text" class="form-input-field" placeholder="Enter employee ID">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-input-field">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Basic Salary</label>
+                                <input type="number" class="form-input-field" placeholder="Enter basic salary">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Total Salary</label>
+                                <input type="number" class="form-input-field" placeholder="Enter total salary">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">No of Working Days</label>
+                                <input type="number" class="form-input-field" placeholder="Enter working days">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Total Present Days</label>
+                                <input type="number" class="form-input-field" placeholder="Enter present days">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Total Leave Days</label>
+                                <input type="number" class="form-input-field" placeholder="Enter leave days">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Additions</label>
+                                <input type="number" class="form-input-field" placeholder="Enter additions">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Deductions</label>
+                                <input type="number" class="form-input-field" placeholder="Enter deductions">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Submit Payroll</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payslip Page -->
+            <div class="page hidden" id="payslipPage">
+                <div class="page-header">
+                    <h1 class="greeting">Payslip Details</h1>
+                </div>
+
+                <div class="payslip-container">
+                    <div class="payslip-header">
+                        <h2 style="color: #1f2937; margin: 0;">Employee Payslip</h2>
+                        <div style="text-align: right;">
+                            <div><strong>Date:</strong> 05/04/2025</div>
+                            <div><strong>Month:</strong> April</div>
+                        </div>
+                    </div>
+
+                    <div class="employee-info">
+                        <div>
+                            <div class="info-item">
+                                <span><strong>Employee Name:</strong></span>
+                                <span>Deepika</span>
+                            </div>
+                            <div class="info-item">
+                                <span><strong>Employee ID:</strong></span>
+                                <span>103</span>
+                            </div>
+                            <div class="info-item">
+                                <span><strong>Role:</strong></span>
+                                <span>Team Lead</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="payslip-table">
+                        <thead>
+                            <tr>
+                                <th>Employee Details</th>
+                                <th>Earnings</th>
+                                <th>Additions</th>
+                                <th>Deductions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div><strong>Employee ID:</strong> 0101</div>
+                                    <div><strong>Employee Name:</strong> Deepika</div>
+                                </td>
+                                <td>
+                                    <div><strong>Basic Salary:</strong> 14,500</div>
+                                    <div><strong>Total Salary:</strong> 14,500</div>
+                                </td>
+                                <td>1000</td>
+                                <td>500</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="total-earnings">
+                        Total Earnings: ₹ 15,000
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="savePayslip()">Save</button>
+                        <button class="btn btn-secondary" onclick="downloadPayslip()">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="edit-modal" id="editModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeEditModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title" id="modalTitle">Edit Value</h2>
+            <div class="modal-form-group">
+                <label class="modal-label" id="modalLabel">Value</label>
+                <input type="text" class="modal-input" id="modalInput">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveEditedValue()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meeting Modal -->
+    <div class="edit-modal" id="meetingModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeMeetingModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Add/Edit Meeting</h2>
+            <div class="modal-form-group">
+                <label class="modal-label">Meeting Title</label>
+                <input type="text" class="modal-input" id="meetingTitleInput" placeholder="e.g., Client Meeting">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Time</label>
+                <input type="time" class="modal-input" id="meetingTimeInput">
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-label">Date</label>
+                <input type="date" class="modal-input" id="meetingDateInput">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-secondary" onclick="closeMeetingModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveMeeting()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== GLOBAL VARIABLES ====================
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let currentEditElementId = null;
+        let currentEditMeeting = null;
+        let isEditingMeeting = false;
+
+        // ==================== LOADING FUNCTIONS ====================
+        function hideLoading() {
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) {
+                loadingElement.classList.add('hidden');
+            }
+        }
+
+        function showLoading() {
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) {
+                loadingElement.classList.remove('hidden');
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading screen after 1 second
+            setTimeout(hideLoading, 1000);
+            
+            // Initialize calendar and counters
+            renderCalendar(currentMonth, currentYear);
+            animateCounters();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize mobile menu button
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+            }
+        });
+
+        function setupEventListeners() {
+            // Login form
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+            
+            // Payroll form
+            const payrollForm = document.getElementById('payrollForm');
+            if (payrollForm) {
+                payrollForm.addEventListener('submit', handlePayrollSubmit);
+            }
+            
+            // Sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageName = this.getAttribute('data-page');
+                    if (pageName) {
+                        showPage(pageName);
+                    }
+                });
+            });
+        }
+
+        // ==================== LOGIN HANDLING ====================
+        function handleLogin(e) {
+            e.preventDefault();
+            showLoading();
+            
+            setTimeout(() => {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                hideLoading();
+            }, 1500);
+        }
+
+        // ==================== PAGE NAVIGATION ====================
+        function showPage(pageName) {
+            showLoading();
+            
+            // Hide all pages first
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Update active sidebar item
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the clicked sidebar item
+            const activeItem = document.querySelector(`.sidebar-item[data-page="${pageName}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+            
+            // Show the requested page
+            const pageMap = {
+                'overview': 'overviewPage',
+                'payroll': 'payrollPage',
+                'payslip': 'payslipPage'
+            };
+            
+            const pageToShow = document.getElementById(pageMap[pageName]);
+            if (pageToShow) {
+                // Special handling for payslip page
+                if (pageName === 'payslip') {
+                    loadPayslipData();
+                }
+                
+                pageToShow.classList.remove('hidden');
+            }
+            
+            // Always hide loading after operation
+            setTimeout(hideLoading, 500);
+        }
+
+        // ==================== EDIT MODAL FUNCTIONS ====================
+        function openEditModal(title, elementId, event) {
+            // Stop event propagation to prevent card click event
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const modal = document.getElementById('editModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalLabel = document.getElementById('modalLabel');
+            const modalInput = document.getElementById('modalInput');
+            
+            // Set modal content
+            modalTitle.textContent = `Edit ${title}`;
+            modalLabel.textContent = title;
+            
+            // Get current value
+            const currentValue = document.getElementById(elementId).textContent;
+            modalInput.value = currentValue;
+            
+            // Store which element we're editing
+            currentEditElementId = elementId;
+            
+            // Show modal
+            modal.classList.add('active');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('active');
+            currentEditElementId = null;
+        }
+
+        function saveEditedValue() {
+            if (!currentEditElementId) return;
+            
+            const modalInput = document.getElementById('modalInput');
+            const newValue = modalInput.value;
+            
+            // Update the value
+            document.getElementById(currentEditElementId).textContent = newValue;
+            
+            // Close modal
+            closeEditModal();
+            
+            // Show success message
+            showAlert('Value updated successfully');
+        }
+
+        // ==================== MEETING MODAL FUNCTIONS ====================
+        function openMeetingModal(meetingElement = null) {
+            const modal = document.getElementById('meetingModal');
+            const titleInput = document.getElementById('meetingTitleInput');
+            const timeInput = document.getElementById('meetingTimeInput');
+            const dateInput = document.getElementById('meetingDateInput');
+            
+            if (meetingElement) {
+                // Editing existing meeting
+                isEditingMeeting = true;
+                currentEditMeeting = meetingElement;
+                
+                const meetingTime = meetingElement.querySelector('.meeting-time').textContent;
+                const meetingDate = meetingElement.querySelector('.meeting-date').textContent;
+                
+                // Extract time and title
+                const timeMatch = meetingTime.match(/(\d{1,2}:\d{2}\s[AP]m)$/i);
+                const title = meetingTime.replace(timeMatch ? timeMatch[0] : '', '').trim();
+                
+                titleInput.value = title;
+                timeInput.value = timeMatch ? convertTo24Hour(timeMatch[0]) : '';
+                
+                // Parse date (assuming format like "Wed May 17")
+                const dateParts = meetingDate.split(' ');
+                if (dateParts.length >= 3) {
+                    const monthName = dateParts[1];
+                    const day = dateParts[2];
+                    const month = new Date(`${monthName} 1, ${currentYear}`).getMonth();
+                    const date = new Date(currentYear, month, day);
+                    dateInput.valueAsDate = date;
+                }
+            } else {
+                // Adding new meeting
+                isEditingMeeting = false;
+                currentEditMeeting = null;
+                
+                // Clear inputs
+                titleInput.value = '';
+                timeInput.value = '';
+                dateInput.valueAsDate = new Date();
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeMeetingModal() {
+            const modal = document.getElementById('meetingModal');
+            modal.classList.remove('active');
+            currentEditMeeting = null;
+            isEditingMeeting = false;
+        }
+
+        function saveMeeting() {
+            const titleInput = document.getElementById('meetingTitleInput');
+            const timeInput = document.getElementById('meetingTimeInput');
+            const dateInput = document.getElementById('meetingDateInput');
+            
+            if (!titleInput.value || !timeInput.value || !dateInput.value) {
+                showAlert('Please fill all fields');
+                return;
+            }
+            
+            const timeString = convertTo12Hour(timeInput.value);
+            const date = new Date(dateInput.value);
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+            const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+            const dayNumber = date.getDate();
+            
+            const formattedDate = `${dayName} ${monthName} ${dayNumber}`;
+            
+            if (isEditingMeeting && currentEditMeeting) {
+                // Update existing meeting
+                currentEditMeeting.querySelector('.meeting-time').textContent = `${titleInput.value} - ${timeString}`;
+                currentEditMeeting.querySelector('.meeting-date').textContent = formattedDate;
+            } else {
+                // Create new meeting
+                const meetingsList = document.getElementById('meetingsList');
+                const newMeeting = document.createElement('div');
+                newMeeting.className = 'meeting-item';
+                newMeeting.onclick = function() { animateMeeting(this); };
+                newMeeting.innerHTML = `
+                    <div class="meeting-content">
+                        <div class="meeting-time">${titleInput.value} - ${timeString}</div>
+                        <div class="meeting-date">${formattedDate}</div>
+                    </div>
+                    <button class="meeting-edit-btn" onclick="editMeeting(this.parentElement, event)">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                `;
+                meetingsList.prepend(newMeeting);
+            }
+            
+            closeMeetingModal();
+            showAlert('Meeting saved successfully');
+        }
+
+        function editMeeting(meetingElement, event) {
+            event.stopPropagation();
+            openMeetingModal(meetingElement);
+        }
+
+        // Helper function to convert 24-hour time to 12-hour format
+        function convertTo12Hour(time24) {
+            const [hours, minutes] = time24.split(':');
+            const period = hours >= 12 ? 'Pm' : 'Am';
+            const hours12 = hours % 12 || 12;
+            return `${hours12}:${minutes} ${period}`;
+        }
+
+        // Helper function to convert 12-hour time to 24-hour format
+        function convertTo24Hour(time12) {
+            const [time, period] = time12.split(' ');
+            let [hours, minutes] = time.split(':');
+            
+            if (period.toLowerCase() === 'pm' && hours !== '12') {
+                hours = parseInt(hours, 10) + 12;
+            } else if (period.toLowerCase() === 'am' && hours === '12') {
+                hours = '00';
+            }
+            
+            return `${hours}:${minutes}`;
+        }
+
+        // ==================== PAYROLL FUNCTIONS ====================
+        function handlePayrollSubmit(e) {
+            e.preventDefault();
+            showLoading();
+            
+            const payrollData = {};
+            document.querySelectorAll('#payrollForm .form-input-field').forEach(input => {
+                const label = input.previousElementSibling.textContent.trim();
+                payrollData[label] = input.value;
+            });
+            
+            try {
+                localStorage.setItem("lastPayroll", JSON.stringify(payrollData));
+                showAlert('Payroll submitted successfully');
+            } catch (error) {
+                console.error("Error saving payroll data:", error);
+                showAlert('Error saving payroll data');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('payrollForm').reset();
+        }
+
+        // ==================== PAYSLIP FUNCTIONS ====================
+        function loadPayslipData() {
+            showLoading();
+            
+            try {
+                const payrollData = JSON.parse(localStorage.getItem("lastPayroll"));
+                
+                if (!payrollData) {
+                    showAlert('No payroll data found. Please submit payroll first.');
+                    return;
+                }
+                
+                // Update employee information
+                updateElementText("#payslipPage .info-item:nth-child(1) span:last-child", payrollData["Employee Name"]);
+                updateElementText("#payslipPage .info-item:nth-child(2) span:last-child", payrollData["Employee ID"]);
+                updateElementText("#payslipPage .info-item:nth-child(3) span:last-child", payrollData["Employee Role"]);
+                
+                // Update payslip table
+                updateElementHTML(".payslip-table tbody td:nth-child(1) div:nth-child(1)", 
+                                `<strong>Employee ID:</strong> ${payrollData["Employee ID"] || 'N/A'}`);
+                updateElementHTML(".payslip-table tbody td:nth-child(1) div:nth-child(2)", 
+                                `<strong>Employee Name:</strong> ${payrollData["Employee Name"] || 'N/A'}`);
+                updateElementHTML(".payslip-table tbody td:nth-child(2)", 
+                                `<div><strong>Basic Salary:</strong> ${payrollData["Basic Salary"] || '0'}</div>
+                                 <div><strong>Total Salary:</strong> ${payrollData["Total Salary"] || '0'}</div>`);
+                
+                updateElementText(".payslip-table tbody td:nth-child(3)", payrollData["Additions"] || '0');
+                updateElementText(".payslip-table tbody td:nth-child(4)", payrollData["Deductions"] || '0');
+                
+                // Calculate and display total earnings
+                const basicSalary = parseFloat(payrollData["Basic Salary"]) || 0;
+                const additions = parseFloat(payrollData["Additions"]) || 0;
+                const deductions = parseFloat(payrollData["Deductions"]) || 0;
+                const totalEarnings = basicSalary + additions - deductions;
+                
+                updateElementText(".total-earnings", `Total Earnings: ₹ ${totalEarnings.toLocaleString()}`);
+                
+            } catch (error) {
+                console.error("Error loading payslip data:", error);
+                showAlert('Error loading payslip data');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateElementText(selector, text) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.textContent = text;
+            }
+        }
+
+        function updateElementHTML(selector, html) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.innerHTML = html;
+            }
+        }
+
+        async function downloadPayslip() {
+            showLoading();
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: "portrait",
+                    unit: "mm",
+                    format: "a4"
+                });
+                
+                const payslipElement = document.querySelector('.payslip-container');
+                
+                // Generate PDF using html2canvas
+                const canvas = await html2canvas(payslipElement, {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = doc.internal.pageSize.getWidth() - 20;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+                doc.save('payslip.pdf');
+                
+                showAlert('Payslip downloaded successfully');
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                showAlert('Error downloading payslip');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function savePayslip() {
+            showAlert('Payslip saved successfully');
+        }
+
+        // ==================== HELPER FUNCTIONS ====================
+        function showAlert(message) {
+            const existingAlert = document.querySelector('.custom-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'custom-alert';
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+                z-index: 10000;
+                animation: slideInRight 0.5s ease-out;
+                max-width: 300px;
+                font-weight: 600;
+            `;
+            alertDiv.textContent = message;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.style.animation = 'slideInRight 0.5s ease-out reverse';
+                setTimeout(() => alertDiv.remove(), 500);
+            }, 3000);
+        }
+
+        // ==================== CALENDAR FUNCTIONS ====================
+        function renderCalendar(month, year) {
+            const monthNames = ["January", "February", "March", "April", "May", "June", 
+                               "July", "August", "September", "October", "November", "December"];
+            
+            // Update month/year display
+            document.getElementById('currentMonthYear').textContent = `${monthNames[month]} ${year}`;
+            
+            const firstDay = new Date(year, month).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            let tableHTML = "<tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr><tr>";
+            let date = 1;
+            
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDay) {
+                        tableHTML += "<td></td>";
+                    } else if (date > daysInMonth) {
+                        break;
+                    } else {
+                        const isToday = date === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                        tableHTML += `<td ${isToday ? 'class="today"' : ''}>${date}</td>`;
+                        date++;
+                    }
+                }
+                tableHTML += "</tr>";
+            }
+            
+            document.getElementById('calendarTable').innerHTML = tableHTML;
+        }
+
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar(currentMonth, currentYear);
+        }
+
+        // ==================== ANIMATIONS ====================
+        function animateCounters() {
+            const counters = [
+                { id: 'totalEmployees', target: 156 },
+                { id: 'totalLeave', target: 23 },
+                { id: 'newEmployees', target: 8 },
+                { id: 'holidays', target: 12 }
+            ];
+            
+            counters.forEach(counter => {
+                const element = document.getElementById(counter.id);
+                if (!element) return;
+                
+                let current = 0;
+                const increment = counter.target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= counter.target) {
+                        current = counter.target;
+                        clearInterval(timer);
+                    }
+                    element.textContent = Math.floor(current);
+                }, 50);
+            });
+        }
+
+        function animateCard(card) {
+            if (!card) return;
+            
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                card.style.transform = 'scale(1.02)';
+                setTimeout(() => { card.style.transform = ''; }, 200);
+            }, 100);
+        }
+
+        function animateMeeting(meeting) {
+            if (!meeting) return;
+            
+            meeting.style.background = 'rgba(251, 191, 36, 0.3)';
+            meeting.style.transform = 'translateX(15px) scale(1.02)';
+            setTimeout(() => {
+                meeting.style.background = '';
+                meeting.style.transform = '';
+            }, 300);
+        }
+
+        // ==================== MOBILE SIDEBAR ====================
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('mobile-open');
+            }
+        }
+    </script>
+
+</body>
+</html>
