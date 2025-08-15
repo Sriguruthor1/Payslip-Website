@@ -13,17 +13,17 @@
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
+   
     <div class="loading" id="loading">
         <div class="spinner"></div>
     </div>
 
-    <!-- Mobile Menu Button -->
+    
     <button class="mobile-menu-btn" id="mobileMenuBtn">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Login Page -->
+    
     <div class="login-container" id="loginPage">
         <div class="login-content">
             <div class="login-illustration">
@@ -770,44 +770,82 @@
         }
 
         async function downloadPayslip() {
-            showLoading();
-            
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: "portrait",
-                    unit: "mm",
-                    format: "a4"
-                });
-                
-                const payslipElement = document.querySelector('.payslip-container');
-                
-                // Generate PDF using html2canvas
-                const canvas = await html2canvas(payslipElement, {
-                    scale: 2,
-                    logging: false,
-                    useCORS: true
-                });
-                
-                const imgData = canvas.toDataURL('image/png');
-                const imgWidth = doc.internal.pageSize.getWidth() - 20;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-                doc.save('payslip.pdf');
-                
-                showAlert('Payslip downloaded successfully');
-            } catch (error) {
-                console.error("Error generating PDF:", error);
-                showAlert('Error downloading payslip');
-            } finally {
-                hideLoading();
-            }
-        }
+    showLoading();
 
-        function savePayslip() {
-            showAlert('Payslip saved successfully');
-        }
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4"
+        });
+
+        // Fetch payroll data from localStorage
+        const payrollData = JSON.parse(localStorage.getItem("lastPayroll")) || {};
+
+        // Document Title
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text("Employee Payslip", 105, 20, { align: "center" });
+
+        // Date & Month
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        const today = new Date();
+        const dateStr = today.toLocaleDateString();
+        const monthStr = today.toLocaleString("default", { month: "long" });
+        doc.text(`Date: ${dateStr}`, 150, 20);
+        doc.text(`Month: ${monthStr}`, 150, 26);
+
+        // Employee Info Section
+        doc.setFontSize(13);
+        doc.setFont("helvetica", "bold");
+        doc.text("Employee Information", 14, 40);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.text(`Name: ${payrollData["Employee Name"] || "N/A"}`, 14, 48);
+        doc.text(`ID: ${payrollData["Employee ID"] || "N/A"}`, 14, 54);
+        doc.text(`Role: ${payrollData["Employee Role"] || "N/A"}`, 14, 60);
+
+        // Salary Table
+        const tableBody = [
+            [
+                `Basic Salary: ${payrollData["Basic Salary"] || "0"}`,
+                `Total Salary: ${payrollData["Total Salary"] || "0"}`,
+                `${payrollData["Additions"] || "0"}`,
+                `${payrollData["Deductions"] || "0"}`
+            ]
+        ];
+
+        doc.autoTable({
+            head: [["Earnings", "Total Salary", "Additions", "Deductions"]],
+            body: tableBody,
+            startY: 70,
+            styles: { fontSize: 11 },
+            headStyles: { fillColor: [251, 191, 36] }
+        });
+
+        // Total Earnings
+        const basic = parseFloat(payrollData["Basic Salary"]) || 0;
+        const adds = parseFloat(payrollData["Additions"]) || 0;
+        const deducts = parseFloat(payrollData["Deductions"]) || 0;
+        const totalEarnings = basic + adds - deducts;
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text(`Total Earnings:  ${totalEarnings.toLocaleString()}`, 14, doc.lastAutoTable.finalY + 10);
+
+        // Save PDF
+        doc.save("payslip.pdf");
+
+        showAlert("Payslip downloaded successfully");
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+        showAlert("Error downloading payslip");
+    } finally {
+        hideLoading();
+    }
+}
 
         // ==================== HELPER FUNCTIONS ====================
         function showAlert(message) {
